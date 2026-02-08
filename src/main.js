@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import initWasm, { generate_adapter_mesh } from '../wasm/pkg/fitting_wasm.js';
+import wasmModuleUrl from '../wasm/pkg/fitting_wasm_bg.wasm?url';
 import { buildControls, defaultParams, sanitizeParams } from './params.js';
 import { exportBinaryStl } from './stl.js';
 
@@ -14,11 +15,14 @@ let geometry;
 boot().catch((err) => {
   const message = document.createElement('p');
   message.className = 'warning';
+  const reason = err?.message || String(err);
+  message.textContent = `WASM module not ready. Build wasm/pkg first (wasm-pack build --target web --out-dir pkg). If you are on Windows, run from PowerShell in the repo root. Error: ${reason}`;
   message.textContent = `WASM module not ready. Build wasm/pkg first (wasm-pack build --target web --out-dir pkg). Error: ${err.message}`;
   controlsHost.replaceChildren(message);
 });
 
 async function boot() {
+  await initWasm(wasmModuleUrl);
   await initWasm();
   initScene();
   buildControls(controlsHost, params, regenerate);

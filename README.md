@@ -38,6 +38,34 @@ Client-side web app for generating **straight BSPP/BSPT adapters** as downloadab
    ```
 3. Open `http://localhost:5173`.
 
+
+## Windows setup (PowerShell)
+1. Install prerequisites:
+   ```powershell
+   winget install OpenJS.NodeJS.LTS
+   winget install Rustlang.Rustup
+   cargo install wasm-pack
+   ```
+2. Build WASM + run app:
+   ```powershell
+   cd wasm
+   wasm-pack build --target web --out-dir pkg
+   cd ..
+   npm install
+   npm run dev
+   ```
+
+## Troubleshooting
+- **Error:** `Cannot read properties of undefined (reading 'byteLength')` when loading WASM.
+  - Rebuild package to ensure glue JS and `.wasm` match:
+    ```powershell
+    cd wasm
+    wasm-pack build --target web --out-dir pkg
+    cd ..
+    ```
+  - Ensure app is run with Vite (`npm run dev`) instead of opening `index.html` directly from disk.
+  - This project now loads the `.wasm` file via an explicit Vite URL import to avoid ambiguous runtime resolution.
+
 ## Geometry assumptions and limits
 - All dimensions are in millimeters.
 - BSP size table is explicit and local (no inferred dimensions).
