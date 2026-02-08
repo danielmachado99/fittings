@@ -17,11 +17,13 @@ boot().catch((err) => {
   message.className = 'warning';
   const reason = err?.message || String(err);
   message.textContent = `WASM module not ready. Build wasm/pkg first (wasm-pack build --target web --out-dir pkg). If you are on Windows, run from PowerShell in the repo root. Error: ${reason}`;
+  message.textContent = `WASM module not ready. Build wasm/pkg first (wasm-pack build --target web --out-dir pkg). Error: ${err.message}`;
   controlsHost.replaceChildren(message);
 });
 
 async function boot() {
   await initWasm(wasmModuleUrl);
+  await initWasm();
   initScene();
   buildControls(controlsHost, params, regenerate);
   document.getElementById('exportStl').addEventListener('click', () => geometry && exportBinaryStl(geometry));
